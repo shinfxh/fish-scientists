@@ -1,0 +1,21 @@
+[
+    {
+        "Name": "custom_tuning_ablation",
+        "Title": "Hyperparameter tuning and ablation studies on neural networks",
+        "Short Hypothesis": "Run a set of hyperparameter tuning and ablation studies on the provided code. Some common hyperparameters to tune are learning rate, batch size, number of epochs, and number of hidden layers.",
+        "Related Work": "Not necessary to refer to external work for this part.",
+        "Abstract": "Ablation studies are a common practice in the ML literature. This proposal is to run a set of ablation studies on the provided code to better understand the impact of different components on the model's performance.",
+        "Experiments": [
+            "1. Baseline Experiments: Run the provided code (DO NOT MODIFY THE CODE HERE!) with the default hyperparameters.",
+            "2. Hyperparameter Tuning: Brainstorm for a set of hyperparameters to run with. Run a set of hyperparameter tuning studies on the provided code.",
+            "3. Ablation Studies: Run a set of ablation studies on the provided code to better understand the impact of different components on the model's performance. Generate a report of the hyperparameter tuning and ablation studies that have been run.",
+            "3. Optimization: Optimize the provided code to improve its performance. This can be done by choosing a good set of hyperparameters. At a high level, optimize for accuracy(test accuracy and test loss), speed(training time), and memory usage(model size)."
+        ],
+        "Risk Factors and Limitations": [
+            "1. Difficulties in finding a set of hyperparameters to run with. As there can be multiple hyperameters to tune, we naturally suffer from the curse of dimensionality. Here we run with a suitable subset of hyperparameters.",
+            "2. Ablation studies can be time-consuming to run. Here we run with a suitable subset of ablation studies.",
+            "3. If the provided code does not run with the default hyperparameters, the experiments will not be able to be run.",
+            "4. The provided code has to be exactly replicated until the stage of coming up with the hyperparameter sweeping and ablation experiments."
+        ]
+    }
+]
