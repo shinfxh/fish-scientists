@@ -193,6 +193,22 @@ Your research idea:\n\n
             + self.task_desc["Short Hypothesis"]
             + "\n"
         )
+        
+        # Add physics-specific guidance if this is a physics experiment
+        if "physics" in self.task_desc["Title"].lower() or "physics" in self.task_desc["Abstract"].lower():
+            task_desc += """
+IMPORTANT PHYSICS RESEARCH GUIDELINES:
+- This is a physics research task that requires MATHEMATICAL DERIVATION and THEORY DEVELOPMENT
+- You must develop physical theories based on fundamental principles (e.g., conservation laws, differential equations)
+- AVOID simple polynomial fitting, curve fitting, or machine learning approaches for the main physics hypothesis
+- Focus on deriving mathematical formulations from first principles
+- Use physics-based modeling approaches (differential equations, Lagrangian/Hamiltonian mechanics, etc.)
+- Your hypotheses should be grounded in established physics principles
+- When testing hypotheses, compare theoretical predictions with experimental data
+- Aim to identify the underlying physical laws and mechanisms governing the system
+
+"""
+        
         if "Code" in self.task_desc:
             task_desc += "Code To Use:\n" + self.task_desc["Code"] + "\n"
         return task_desc
@@ -235,6 +251,31 @@ Your research idea:\n\n
                     f"Experiments is not a list or string: {self.task_desc['Experiments']}"
                 )
             task_desc += "Experiment Plan: " + experiment_str + "\n"
+            
+            # Add physics-specific experiment guidance for stage 3
+            if "physics" in self.task_desc["Title"].lower() or "physics" in self.task_desc["Abstract"].lower():
+                task_desc += """
+PHYSICS EXPERIMENT METHODOLOGY:
+For hypothesis generation (Step 2): 
+- Start by analyzing the data structure and identifying key variables
+- Consider what physical systems could produce such data patterns
+- Derive mathematical equations from physical principles (e.g., Newton's laws, energy conservation)
+- Formulate differential equations that could govern the system dynamics
+
+For hypothesis testing (Step 3):
+- Implement the derived mathematical models (not just curve fitting)
+- Solve differential equations numerically using appropriate methods (e.g., scipy.integrate.solve_ivp)
+- Compare theoretical predictions with observed data
+- Use physics-meaningful parameters (mass, length, damping, charge, electric permittivity, etc.) rather than arbitrary coefficients
+- Validate models by checking conservation laws and physical constraints
+
+For iterative refinement (Step 4):
+- Adjust physical parameters within realistic ranges
+- Consider additional physics effects (friction, air resistance, etc.) if simple models don't fit
+- Use proper statistical measures (R-squared, RMSE) but interpret them in physics context
+- Ensure refined models still obey fundamental physics principles
+
+"""
         elif stage.name.startswith("4_"):
             if isinstance(self.task_desc["Risk Factors and Limitations"], list):
                 risk_factors_str = "\n".join(

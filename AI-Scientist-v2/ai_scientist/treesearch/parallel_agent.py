@@ -313,6 +313,25 @@ class MinimalAgent:
             "  - Always pay extra attention to data preprocessing and normalization procedures",
             "  - This is extremely important because the input to any model or analysis directly affects the output and conclusions",
         ]
+        
+        # Add physics-specific guidelines if this is a physics task
+        if hasattr(self, 'task_desc') and self.task_desc and (
+            "physics" in self.task_desc.lower() or 
+            "mathematical derivation" in self.task_desc.lower() or
+            "differential equation" in self.task_desc.lower()
+        ):
+            impl_guideline.extend([
+                "PHYSICS-SPECIFIC IMPLEMENTATION REQUIREMENTS:",
+                "  - MANDATORY: Focus on mathematical derivations and physics-based modeling",
+                "  - REQUIRED: Derive mathematical formulations from first principles (Newton's laws, conservation laws, Lagrangian mechanics, etc.)",
+                "  - REQUIRED: Use differential equations to model physical systems",
+                "  - REQUIRED: When implementing models, use scipy.integrate.solve_ivp or similar numerical solvers for differential equations",
+                "  - REQUIRED: Use physics-meaningful parameters (mass, length, electric permittivity, Young's modulus, damping coefficient, etc.)",
+                "  - REQUIRED: Validate your models by checking physical constraints and conservation laws",
+                "  - REQUIRED: Compare theoretical predictions (from derived equations) with experimental data",
+                "  - Always implement the full mathematical model before relying just approximations or fits",
+            ])
+        
         if hasattr(self.cfg.experiment, "num_syn_datasets"):
             num_syn_datasets = self.cfg.experiment.num_syn_datasets
             if num_syn_datasets > 1:
@@ -465,14 +484,34 @@ class MinimalAgent:
             "Instructions": {},
         }
         prompt["Instructions"] |= self._prompt_resp_fmt
-        prompt["Instructions"] |= {
+        
+        # Add physics-specific experiment design guidelines
+        physics_guidelines = {
             "Experiment design sketch guideline": [
                 "This first experiment design should be relatively simple, without extensive hyper-parameter optimization.",
                 "Take the Memory section into consideration when proposing the design. ",
                 "The solution sketch should be 6-10 sentences. ",
                 "Make sure to create synthetic data if needed.",
                 "",
-            ],
+            ]
+        }
+        
+        # Check if this is a physics task and modify guidelines accordingly
+        if hasattr(self, 'task_desc') and self.task_desc and (
+            "physics" in self.task_desc.lower() or 
+            "mathematical derivation" in self.task_desc.lower() or
+            "differential equation" in self.task_desc.lower()
+        ):
+            physics_guidelines["Experiment design sketch guideline"] = [
+                "For physics experiments: Focus on MATHEMATICAL THEORY DEVELOPMENT before simple data fitting.",
+                "Your approach should include: 1) Data analysis to identify physical patterns, 2) Mathematical derivation of governing equations from first principles, 3) Numerical solution of derived equations, 4) Parameter estimation using physics constraints, 5) Model validation against data.",
+                "Consider what physical system could produce the observed data (oscillators, gravitational systems, etc.).",
+                "The solution sketch should be 6-10 sentences focusing on the physics theory and mathematical derivation approach.",
+                "",
+            ]
+        
+        prompt["Instructions"] |= physics_guidelines
+        prompt["Instructions"] |= {
             "Evaluation Metric(s)": self.evaluation_metrics,
         }
         prompt["Instructions"] |= self._prompt_impl_guideline
@@ -537,6 +576,23 @@ class MinimalAgent:
         }
 
         prompt["Instructions"] |= self._prompt_resp_fmt
+        
+        # Add physics-specific improvement guidelines
+        if hasattr(self, 'task_desc') and self.task_desc and (
+            "physics" in self.task_desc.lower() or 
+            "mathematical derivation" in self.task_desc.lower() or
+            "differential equation" in self.task_desc.lower()
+        ):
+            prompt["Instructions"] |= {
+                "Physics Improvement Guidelines": [
+                    "When improving physics experiments, maintain focus on mathematical rigor and physical principles.",
+                    "Do NOT resort to simple polynomial fitting or curve fitting to improve results.",
+                    "If the current model doesn't fit well, hypothesize additional physics effects rather than using generic fitting.",
+                    "Ensure any improvements maintain physical interpretability and follow conservation laws.",
+                    "Use physics-meaningful parameters and validate any changes against physical constraints.",
+                ]
+            }
+        
         prompt["Instructions"] |= self._prompt_impl_guideline
 
         plan, code = self.plan_and_code_query(prompt)
