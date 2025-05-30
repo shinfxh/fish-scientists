@@ -1,12 +1,12 @@
 [
     {
-        "Name": "physicist_physics_data",
+        "Name": "physics_data_analysis",
         "Title": "Physics Data Analysis",
         "Short Hypothesis": "Analyse the provided physics data and come up with a hypothesis about the physics of the system.",
         "Related Work": "Not necessary to refer to external work for this part.",
         "Abstract": "Scientific advancements are made through analysis of data, coming up with hypotheses, testing them and iteratively refining the scientific process. Given a set of physics data in classical mechanics, the goal is to come up with a hypothesis about the physics of the system.",
         "Experiments": [
-            "1. Baseline visualizations: Visualize the data in a way that is easy to understand and interpret. This can be done by plotting the data in a way that is easy to understand and interpret.",
+            "1. Baseline visualizations: Load the data from /home/shinfxh/fish-scientists/AI-Scientist-v2/physics_data.csv. Visualize the data in a way that is easy to understand and interpret. This can be done by plotting the data in a way that is easy to understand and interpret.",
             "2. Hypothesis generation: Brainstorm for a set of hypotheses about the physics of the system. This can be simple model fits or relying on some known physics theory that can potentially describe the data.",
             "3. Hypothesis testing: Validate the accuracy of different theories. This can be done by for example, evaluating the R-squared error of a model fit.",
             "4. Iterative refinement: Refine the hypothesis by running a set of experiments. For example, this can be done by sweeping hyperparamters for the model fit.",

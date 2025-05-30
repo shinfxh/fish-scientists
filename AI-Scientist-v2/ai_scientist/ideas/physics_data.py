@@ -89,8 +89,8 @@ def simulate_double_pendulum(L1=1.0, L2=1.0, m1=1.0, m2=1.0, g=9.81,
     # Create DataFrame
     data = pd.DataFrame({
         'time': sol.t,
-        'theta1': theta1,
-        'theta2': theta2,
+        'a': theta1,
+        'b': theta2,
         'x1': x1,
         'y1': y1,
         'x2': x2,

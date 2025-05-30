@@ -46,7 +46,7 @@ def parse_arguments():
         type=str,
         default="icbinb",
         choices=["normal", "icbinb"],
-        help="Type of writeup to generate (normal=8 page, icbinb=4 page)",
+        help="Type of writeup to generate (normal=4 page, icbinb=4 page)",
     )
     parser.add_argument(
         "--load_ideas",
@@ -275,7 +275,7 @@ if __name__ == "__main__":
                 writeup_success = perform_writeup(
                     base_folder=idea_dir,
                     big_model=args.model_writeup,
-                    page_limit=8,
+                    page_limit=4,
                     citations_text=citations_text,
                 )
             else:
