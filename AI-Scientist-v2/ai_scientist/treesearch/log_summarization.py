@@ -13,9 +13,10 @@ from ai_scientist.llm import get_response_from_llm, extract_json_between_markers
 client = openai.OpenAI()
 model = "gpt-4o-2024-08-06"
 
-report_summarizer_sys_msg = """You are an expert machine learning researcher.
+report_summarizer_sys_msg = """You are an expert scientist.
 You are given multiple experiment logs, each representing a node in a stage of exploring scientific ideas and implementations.
-Your task is to aggregate these logs and provide scientifically insightful information.
+Your task is to aggregate these logs and provide scientifically insightful information. 
+You are expected to consolidate these results with a mathematical theory that accurately describes the data.
 
 Important instructions:
 - Do NOT hallucinate or fabricate information that is not present in the logs.
@@ -210,7 +211,7 @@ def update_summary(
     )
     try:
         response = get_response_from_llm(
-            prompt, client, model, "You are an expert machine learning researcher."
+            prompt, client, model, "You are an expert scientist."
         )
         summary_json = extract_json_between_markers(response[0])
         assert summary_json

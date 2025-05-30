@@ -1,0 +1,21 @@
+[
+    {
+        "Name": "physicist_physics_data",
+        "Title": "Physics Data Analysis",
+        "Short Hypothesis": "Analyse the provided physics data and come up with a hypothesis about the physics of the system.",
+        "Related Work": "Not necessary to refer to external work for this part.",
+        "Abstract": "Scientific advancements are made through analysis of data, coming up with hypotheses, testing them and iteratively refining the scientific process. Given a set of physics data in classical mechanics, the goal is to come up with a hypothesis about the physics of the system.",
+        "Experiments": [
+            "1. Baseline visualizations: Visualize the data in a way that is easy to understand and interpret. This can be done by plotting the data in a way that is easy to understand and interpret.",
+            "2. Hypothesis generation: Brainstorm for a set of hypotheses about the physics of the system. This can be simple model fits or relying on some known physics theory that can potentially describe the data.",
+            "3. Hypothesis testing: Validate the accuracy of different theories. This can be done by for example, evaluating the R-squared error of a model fit.",
+            "4. Iterative refinement: Refine the hypothesis by running a set of experiments. For example, this can be done by sweeping hyperparamters for the model fit.",
+            "5. Report generation: Generate a report of the hypothesis testing and refinement that have been run."
+        ],
+        "Risk Factors and Limitations": [
+            "1. The nature of the data is not known. And the task here is to infer the underlying physical laws from the data alone.",
+            "2. Sometimes the exact theory cannot be given because the data is noisy, so reasonable compromises have to be made.",
+            "3. The provided code has to be exactly replicated until the stage of coming up with the hypothesis testing and refinement."
+        ]
+    }
+]

@@ -435,15 +435,14 @@ class Journal:
         # Create evaluation prompt for LLM
         prompt = {
             "Introduction": (
-                "You are an experienced AI researcher evaluating different implementations "
+                "You are an experienced scientist evaluating different implementations "
                 "of an experiment to select the best one. You should consider all aspects "
-                "including performance metrics, training dynamics, generated plots quality."
+                "including performance metrics, experimental results, generated plots quality."
             ),
             "Task": (
                 "Select the best implementation from the candidates below, considering all available evidence."
-                "Avoid relying too heavily on the validation loss alone, because "
-                "it may not be directly comparable across different objective functions or training details. "
-                "If there are multiple validation losses (e.g., when evaluating multiple datasets), "
+                "Consider the experimental results comprehensively, looking at all metrics and outcomes. "
+                "If there are multiple experimental conditions or datasets being evaluated, "
                 "consider all of them and select the implementation that performs best overall."
             ),
             "Candidates": "",
@@ -455,7 +454,7 @@ class Journal:
                     f"ID: {node.id}\n" f"Metric: {str(node.metric)}\n"
                     if node.metric
                     else (
-                        "N/A\n" f"Training Analysis: {node.analysis}\n"
+                        "N/A\n" f"Experimental Results: {node.analysis}\n"
                         if hasattr(node, "analysis")
                         else (
                             "N/A\n" f"VLM Feedback: {node.vlm_feedback_summary}\n"
@@ -502,7 +501,7 @@ class Journal:
 
         prompt = {
             "Introduction": (
-                "You are an AI researcher summarizing experimental progress. "
+                "You are a scientist summarizing experimental progress. "
                 "Please analyze both successful and failed experiments to provide insights "
                 "for future improvements."
             ),

@@ -177,9 +177,9 @@ class AgentManager:
         )
 
     def _get_task_desc_str(self):
-        task_desc = """You are an ambitious AI researcher who is looking to publish a paper that will contribute significantly to the field.
+        task_desc = """You are a scientist who is looking to publish a paper that will contribute significantly to the field.
 You have an idea and you want to conduct creative experiments to gain scientific insights.
-Your aim is to run experiments to gather sufficient results for a top conference paper.
+Your aim is to run experiments to gather sufficient results for a top-tier research publication.
 Your research idea:\n\n
 """
         task_desc += (

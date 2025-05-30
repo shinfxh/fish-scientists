@@ -339,7 +339,8 @@ def get_citation_addition(
 ):
     report, citations = context
     msg_history = []
-    citation_system_msg_template = """You are an ambitious AI researcher who is looking to publish a paper to a workshop at ICLR 2025 that explores real-world pitfalls, failures, and challenges in deep learning.
+    citation_system_msg_template = """You are a scientist who is looking to publish a paper to a workshop that explores real-world challenges.
+This workshop aims to highlight real-world pitfalls, challenges, and negative or inconclusive results in research, encouraging open discussion.
 You have already completed the experiments and now you are looking to collect citations to related papers.
 This phase focuses on collecting references and annotating them to be integrated later.
 Collected citations will be added to a references.bib file.
@@ -530,8 +531,8 @@ This JSON will be automatically parsed, so ensure the format is precise."""
     return references_prompt, False
 
 
-writeup_system_message_template = """You are an ambitious AI researcher who is looking to publish a paper to the "I Can't Believe It's Not Better" (ICBINB) Workshop at ICLR 2025.
-This workshop aims to highlight real-world pitfalls, challenges, and negative or inconclusive results in deep learning, encouraging open discussion.
+writeup_system_message_template = """You are a scientist who is looking to publish a paper to a workshop that explores real-world challenges.
+This workshop aims to highlight real-world pitfalls, challenges, and negative or inconclusive results in research, encouraging open discussion.
 You must accurately represent the results of the experiments.
 The main paper is limited to {page_limit} pages in single-column format, not counting references. In general, try to use the available space and include all relevant information.
 DO NOT USE MORE THAN {page_limit} PAGES FOR THE MAIN TEXT.

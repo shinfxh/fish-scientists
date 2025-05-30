@@ -26,7 +26,7 @@ def encode_image_to_base64(image_data):
 
 
 reviewer_system_prompt_base = (
-    "You are an AI researcher who is reviewing a paper that was submitted to a prestigious ML venue."
+    "You are a scientist who is reviewing a paper that was submitted to a prestigious scientific venue."
     "Be critical and cautious in your decision."
 )
 

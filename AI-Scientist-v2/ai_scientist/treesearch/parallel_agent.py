@@ -285,32 +285,33 @@ class MinimalAgent:
             "bayesian-optimization",
             "timm",
             "albumentations",
+            "scipy"
         ]
         random.shuffle(pkgs)
         pkg_str = ", ".join([f"`{p}`" for p in pkgs])
 
         env_prompt = {
-            "Installed Packages": f"Your solution can use any relevant machine learning packages such as: {pkg_str}. Feel free to use any other packages too (all packages are already installed!). For neural networks we suggest using PyTorch rather than TensorFlow."
+            "Installed Packages": f"Your solution can use any relevant scientific computing packages such as: {pkg_str}. Feel free to use any other packages too (all packages are already installed!). For data analysis and modeling, you can use scipy, scikit-learn, or other appropriate scientific libraries."
         }
         return env_prompt
 
     @property
     def _prompt_impl_guideline(self):
         impl_guideline = [
-            "CRITICAL GPU REQUIREMENTS - Your code MUST include ALL of these:",
-            "  - At the start of your code, add these lines to handle GPU/CPU:",
+            "CRITICAL COMPUTATIONAL REQUIREMENTS - Your code MUST include ALL of these when applicable:",
+            "  - At the start of your code, add these lines to handle GPU/CPU when using deep learning libraries:",
             "    ```python",
             "    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')",
             "    print(f'Using device: {device}')",
             "    ```",
-            "  - ALWAYS move models to device using the `.to(device)` method",
-            "  - ALWAYS move input tensors to device using the `.to(device)` method",
-            "  - ALWAYS move model related tensors to device using the `.to(device)` method",
-            "  - For optimizers, create them AFTER moving model to device",
+            "  - ALWAYS move models to device using the `.to(device)` method when using PyTorch",
+            "  - ALWAYS move input tensors to device using the `.to(device)` method when using PyTorch",
+            "  - ALWAYS move model related tensors to device using the `.to(device)` method when using PyTorch",
+            "  - For optimizers, create them AFTER moving model to device when using PyTorch",
             "  - When using DataLoader, move batch tensors to device in training loop: `batch = {k: v.to(device) for k, v in batch.items() if isinstance(v, torch.Tensor)}`",
-            "CRITICAL MODEL INPUT GUIDELINES:",
-            "  - Always pay extra attention to the input to the model being properly normalized",
-            "  - This is extremely important because the input to the model's forward pass directly affects the output, and the loss function is computed based on the output",
+            "CRITICAL EXPERIMENTAL GUIDELINES:",
+            "  - Always pay extra attention to data preprocessing and normalization procedures",
+            "  - This is extremely important because the input to any model or analysis directly affects the output and conclusions",
         ]
         if hasattr(self.cfg.experiment, "num_syn_datasets"):
             num_syn_datasets = self.cfg.experiment.num_syn_datasets
@@ -372,13 +373,13 @@ class MinimalAgent:
                 "- Include timestamps or epochs with the saved metrics",
                 "- For large datasets, consider saving in chunks or using np.savez_compressed()",
                 "CRITICAL EVALUATION REQUIREMENTS - Your code MUST include ALL of these:",
-                "  1. Track and print validation loss at each epoch or at suitable intervals:",
+                "  1. Track and print key metrics at each iteration or at suitable intervals:",
                 "     ```python",
-                "     print(f'Epoch {{epoch}}: validation_loss = {{val_loss:.4f}}')",
+                "     print(f'Iteration {{iteration}}: key_metric = {{metric_value:.4f}}')",
                 "     ```",
                 "  2. Track and update ALL these additional metrics: "
                 + str(self.evaluation_metrics),
-                "  3. Update metrics at EACH epoch:",
+                "  3. Update metrics at EACH iteration or time step:",
                 "  4. Save ALL metrics at the end:",
                 "     ```python",
                 "     np.save(os.path.join(working_dir, 'experiment_data.npy'), experiment_data)",
@@ -453,9 +454,9 @@ class MinimalAgent:
     def _draft(self) -> Node:
         prompt: Any = {
             "Introduction": (
-                "You are an AI researcher who is looking to publish a paper that will contribute significantly to the field."
+                "You are a scientist who is looking to publish a paper that will contribute significantly to the field."
                 "Your first task is to write a python code to implement a solid baseline based on your research idea provided below, "
-                "from data preparation to model training, as well as evaluation and visualization. "
+                "from data preparation to analysis, as well as evaluation and visualization. "
                 "Focus on getting a simple but working implementation first, before any sophisticated improvements. "
                 "We will explore more advanced variations in later stages."
             ),
@@ -469,7 +470,6 @@ class MinimalAgent:
                 "This first experiment design should be relatively simple, without extensive hyper-parameter optimization.",
                 "Take the Memory section into consideration when proposing the design. ",
                 "The solution sketch should be 6-10 sentences. ",
-                "Don't suggest to do EDA.",
                 "Make sure to create synthetic data if needed.",
                 "",
             ],
@@ -494,7 +494,7 @@ class MinimalAgent:
     def _debug(self, parent_node: Node) -> Node:
         prompt: Any = {
             "Introduction": (
-                "You are an experienced AI researcher. Your previous code for research experiment had a bug, so based on the information below, you should revise it in order to fix this bug. "
+                "You are an experienced scientist. Your previous code for research experiment had a bug, so based on the information below, you should revise it in order to fix this bug. "
                 "Your response should be an implementation outline in natural language,"
                 " followed by a single markdown code block which implements the bugfix/solution."
             ),
@@ -509,7 +509,7 @@ class MinimalAgent:
         prompt["Instructions"] |= {
             "Bugfix improvement sketch guideline": [
                 "You should write a brief natural language description (3-5 sentences) of how the issue in the previous implementation can be fixed.",
-                "Don't suggest to do EDA.",
+                "Don't suggest to do EDA.", # this is quite interestingly repeated
             ],
         }
         prompt["Instructions"] |= self._prompt_impl_guideline
@@ -523,7 +523,7 @@ class MinimalAgent:
     def _improve(self, parent_node: Node) -> Node:
         prompt: Any = {
             "Introduction": (
-                "You are an experienced AI researcher. You are provided with a previously developed "
+                "You are an experienced scientist. You are provided with a previously developed "
                 "implementation. Your task is to improve it based on the current experimental stage."
             ),
             "Research idea": self.task_desc,
@@ -559,7 +559,7 @@ class MinimalAgent:
     ):
         prompt: Any = {
             "Introduction": (
-                "You are an experienced AI researcher. You are provided with a previously developed "
+                "You are an experienced scientist. You are provided with a previously developed "
                 "baseline implementation. Your task is to implement hyperparameter tuning for the following idea: "
                 + hyperparam_idea.name
                 + ". "
@@ -605,11 +605,9 @@ class MinimalAgent:
     def _generate_ablation_node(self, parent_node: Node, ablation_idea: AblationIdea):
         prompt: Any = {
             "Introduction": (
-                "You are an experienced AI researcher. You are provided with a previously developed "
-                "baseline implementation. Your task is to implement the ablation study for the following idea: "
-                + ablation_idea.name
-                + ". "
-                + ablation_idea.description
+                "You are a scientist conducting ablation studies. "
+                "Based on the current implementation and previous ablations (if any), "
+                "propose ONE new ablation study that tests a different aspect of the method or model."
             ),
             "Base code you are working on": wrap_code(parent_node.code),
             "Instructions": {},
@@ -689,7 +687,7 @@ class MinimalAgent:
 
         prompt = {
             "Introduction": (
-                "You are an experienced AI researcher. "
+                "You are an experienced scientist. "
                 "You have written code for your research experiment and now need to evaluate the output of the code execution. "
                 "Analyze the execution output, determine if there were any bugs, and provide a summary of the findings. "
             ),
@@ -839,7 +837,7 @@ class MinimalAgent:
             plot_analyses += f"plot {i+1}: {plot_analysis['analysis']}\n"
 
         determine_prompt = {
-            "Introduction": "You are an AI researcher analyzing experiment results. Based on the plot analyses and feedback, determine which datasets are successfully tested. Return reasoning and the dataset names that are successfully executed, or an empty string if no datasets are successfully executed.",
+            "Introduction": "You are a scientist analyzing experiment results. Based on the plot analyses and feedback, determine which datasets are successfully tested. Return reasoning and the dataset names that are successfully executed, or an empty string if no datasets are successfully executed.",
             "Plot analyses": plot_analyses,
             "VLM feedback summary": node.vlm_feedback_summary,
             "Original plotting code": node.plot_code,
@@ -916,10 +914,10 @@ class MinimalAgent:
             # select 10 plots to analyze
             prompt_select_plots = {
                 "Introduction": (
-                    "You are an experienced AI researcher analyzing experimental results. "
-                    "You have been provided with plots from a machine learning experiment. "
+                    "You are an experienced scientist analyzing experimental results. "
+                    "You have been provided with plots from a scientific experiment. "
                     "Please select 10 most relevant plots to analyze. "
-                    "For similar plots (e.g. generated samples at each epoch), select only at most 5 plots at a suitable interval of epochs."
+                    "For similar plots (e.g. generated samples at each iteration), select only at most 5 plots at a suitable interval."
                     "Format your response as a list of plot paths, where each plot path includes the full path to the plot file."
                 ),
                 "Plot paths": node.plot_paths,
@@ -984,8 +982,8 @@ class MinimalAgent:
             {
                 "type": "text",
                 "text": (
-                    "You are an experienced AI researcher analyzing experimental results. "
-                    "You have been provided with plots from a machine learning experiment. "
+                    "You are an experienced scientist analyzing experimental results. "
+                    "You have been provided with plots from a scientific experiment. "
                     f"This experiment is based on the following research idea: {self.task_desc}"
                     "Please analyze these plots and provide detailed insights about the results. "
                     "If you don't receive any plots, say 'No plots received'. "
@@ -1036,7 +1034,7 @@ class MinimalAgent:
         """Generate a summary of the node's experimental findings"""
         summary_prompt = {
             "Introduction": (
-                "You are an AI researcher analyzing experimental results. "
+                "You are a scientist analyzing experimental results. "
                 "Please summarize the findings from this experiment iteration."
             ),
             "Research idea": self.task_desc,
@@ -1195,14 +1193,14 @@ class ParallelAgent:
         """Define eval metric to be used across all experiments"""
         prompt = {
             "Introduction": (
-                "You are an AI researcher setting up experiments. "
+                "You are a scientist setting up experiments. "
                 "Please propose meaningful evaluation metrics that will help analyze "
                 "the performance and characteristics of solutions for this research task."
             ),
             "Research idea": self.task_desc,
             "Instructions": [
                 "Propose a single evaluation metric that would be useful for analyzing the performance of solutions for this research task.",
-                "Note: Validation loss will be tracked separately so you don't need to include it in your response.",
+                "Note: Key metrics will be tracked during the experiment so you don't need to include basic ones in your response.",
                 "Format your response as a list containing:",
                 "- name: The name of the metric",
                 "- maximize: Whether higher values are better (true/false)",
@@ -1554,7 +1552,7 @@ class ParallelAgent:
                     # Call LLM to parse data files and extract metrics
                     parse_metrics_prompt = {
                         "Introduction": (
-                            "You are an AI researcher analyzing experimental results stored in numpy files. "
+                            "You are a scientist analyzing experimental results stored in numpy files. "
                             "Write code to load and analyze the metrics from experiment_data.npy."
                         ),
                         "Context": [
@@ -1565,7 +1563,7 @@ class ParallelAgent:
                             "1. Load the experiment_data.npy file, which is located in the working directory",
                             "2. Extract metrics for each dataset. Make sure to refer to the original code to understand the structure of the data.",
                             "3. Always print the name of the dataset before printing the metrics",
-                            "4. Always print the name of the metric before printing the value by specifying the metric name clearly. Avoid vague terms like 'train,' 'val,' or 'test.' Instead, use precise labels such as 'train accuracy,' 'validation loss,' or 'test F1 score,' etc.",
+                            "4. Always print the name of the metric before printing the value by specifying the metric name clearly. Avoid vague terms like 'train,' 'val,' or 'test.' Instead, use precise labels such as 'R-squared,' 'RMSE,' or 'accuracy,' etc.",
                             "5. You only need to print the best or final value for each metric for each dataset",
                             "6. DO NOT CREATE ANY PLOTS",
                             "Important code structure requirements:",
@@ -1803,10 +1801,10 @@ class ParallelAgent:
 
         hyperparam_tuning_prompt = {
             "Introduction": (
-                "You are an AI researcher conducting hyperparameter tuning for baseline experiments. "
+                "You are a scientist conducting hyperparameter tuning for baseline experiments. "
                 "Based on the current implementation and previous hyperparameter tuning attempts (if any), "
                 "propose ONE new hyperparameter tuning idea to see if it improves the performance."
-                "You should first check if simply training longer (more epochs) improves the performance."
+                "You should first check if simply running longer (more iterations) improves the performance."
                 "Then try tuning common hyperparameters such as learning rate, batch size, etc."
                 "Only propose algorithm-specific and/or model-specific hyperparameters after you have tried the above."
             ),
@@ -1865,9 +1863,9 @@ class ParallelAgent:
 
         ablation_prompt = {
             "Introduction": (
-                "You are an AI researcher conducting ablation studies. "
+                "You are a scientist conducting ablation studies. "
                 "Based on the current implementation and previous ablations (if any), "
-                "propose ONE new ablation study that tests a different aspect of the model."
+                "propose ONE new ablation study that tests a different aspect of the method or model."
             ),
             "Base code you are working on": wrap_code(self.best_stage3_node.code),
             "Previous Ablations": {

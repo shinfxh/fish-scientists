@@ -11,7 +11,7 @@ from ai_scientist.llm import (
 )
 
 reviewer_system_prompt_base = (
-    "You are an AI researcher who is reviewing a paper that was submitted to a prestigious ML venue."
+    "You are a scientist who is reviewing a paper that was submitted to a prestigious scientific venue."
     "Be critical and cautious in your decision."
 )
 reviewer_system_prompt_neg = (
@@ -311,7 +311,7 @@ fewshot_reviews = [
 
 def get_review_fewshot_examples(num_fs_examples=1):
     fewshot_prompt = """
-Below are some sample reviews, copied from previous machine learning conferences.
+Below are some sample reviews, copied from previous scientific conferences.
 Note that while each review is formatted differently according to each reviewer's style, the reviews are well-structured and therefore easy to navigate.
 """
     for paper_path, review_path in zip(
@@ -340,7 +340,7 @@ Review:
     return fewshot_prompt
 
 
-meta_reviewer_system_prompt = """You are an Area Chair at a machine learning conference.
+meta_reviewer_system_prompt = """You are an Area Chair at a scientific conference.
 You are in charge of meta-reviewing a paper that was reviewed by {reviewer_count} reviewers.
 Your job is to aggregate the reviews into a single meta-review in the same format.
 Be critical and cautious in your decision, find consensus, and respect the opinion of all the reviewers."""
