@@ -470,7 +470,136 @@ class MinimalAgent:
             )
         }
 
+    def _execute_data_exploration(self, workspace_dir: str) -> str:
+        """Execute data exploration code and return the output for informing main experiment design"""
+        from .interpreter import Interpreter
+        import os
+        import tempfile
+        
+        # Create data exploration prompt
+        exploration_prompt = {
+            "Introduction": (
+                "You are a scientist who needs to first explore and understand the data before designing experiments. "
+                "Write Python code to load, visualize, and analyze the data to understand its structure and characteristics. "
+                "This is a preliminary exploration step - you should print detailed information about the data and create basic visualizations. "
+                "Focus on understanding what the data contains and what patterns might be present."
+            ),
+            "Research idea": self.task_desc,
+            "Instructions": {
+                "Data exploration requirements": [
+                    "Load the data and print its basic properties (shape, columns, data types)",
+                    "Print statistical summaries of the data",
+                    "Print at least one complete trajectory/sample to understand the data structure", 
+                    "Create basic visualizations to understand patterns in the data",
+                    "Print your observations about what physical system this data might represent",
+                    "Save any plots you create to the working directory",
+                    "Use descriptive print statements to explain what you're finding",
+                    "The code should be self-contained and executable",
+                    "Make sure to import all necessary libraries",
+                ]
+            }
+        }
+        
+        # Add physics-specific exploration guidelines
+        if hasattr(self, 'task_desc') and self.task_desc and (
+            "physics" in self.task_desc.lower() or 
+            "mathematical derivation" in self.task_desc.lower() or
+            "differential equation" in self.task_desc.lower()
+        ):
+            exploration_prompt["Instructions"]["Physics-specific exploration"] = [
+                "Look for patterns that might indicate physical laws (oscillations, conservation, etc.)",
+                "Check if trajectories show energy conservation or other physical constraints",
+                "Analyze time-series patterns that might suggest differential equations",
+                "Print observations about potential physical systems (harmonic oscillator, planetary motion, etc.)",
+                "Look for relationships between variables that might suggest physical equations",
+            ]
+        
+        exploration_prompt["Instructions"]["Code format"] = [
+            "Write complete, executable Python code in a single code block",
+            "Use ```python to start and ``` to end the code block",
+            "Include all necessary imports at the beginning",
+        ]
+        
+        print("[cyan]Generating data exploration code...[/cyan]")
+        
+        # Generate exploration code
+        exploration_response = query(
+            system_message=exploration_prompt,
+            user_message=None,
+            model=self.cfg.agent.code.model,
+            temperature=self.cfg.agent.code.temp,
+        )
+        
+        exploration_code = extract_code(exploration_response)
+        if not exploration_code:
+            print("[red]Failed to extract exploration code, skipping data exploration[/red]")
+            return "Data exploration failed - no code generated"
+        
+        print("[cyan]Executing data exploration code...[/cyan]")
+        
+        # Create temporary workspace for exploration
+        exploration_workspace = os.path.join(workspace_dir, "exploration")
+        os.makedirs(exploration_workspace, exist_ok=True)
+        
+        # Create interpreter for exploration
+        exploration_interpreter = Interpreter(
+            working_dir=exploration_workspace,
+            timeout=300,  # 5 minute timeout for exploration
+            format_tb_ipython=self.cfg.exec.format_tb_ipython,
+            agent_file_name="explore_data.py",
+            env_vars={"AI_SCIENTIST_ROOT": os.getenv("AI_SCIENTIST_ROOT", "")}
+        )
+        
+        try:
+            # Execute exploration code
+            exec_result = exploration_interpreter.run(exploration_code, reset_session=True)
+            exploration_output = "".join(exec_result.term_out) if exec_result.term_out else ""
+            
+            # Check for execution errors
+            if exec_result.exc_type:
+                exploration_output += f"\nExecution Error: {exec_result.exc_type}"
+                if exec_result.exc_info:
+                    exploration_output += f"\nError Details: {exec_result.exc_info}"
+            
+            print("[cyan]Data exploration completed successfully[/cyan]")
+            print(f"[green]Exploration output length: {len(exploration_output)} characters[/green]")
+            
+            # Cleanup interpreter
+            exploration_interpreter.cleanup_session()
+            
+            return exploration_output
+            
+        except Exception as e:
+            print(f"[red]Error during data exploration: {str(e)}[/red]")
+            exploration_interpreter.cleanup_session()
+            return f"Data exploration failed with error: {str(e)}"
+
     def _draft(self) -> Node:
+        # First, execute data exploration if this is a physics task
+        exploration_output = ""
+        if hasattr(self, 'task_desc') and self.task_desc and (
+            "physics" in self.task_desc.lower() or 
+            "mathematical derivation" in self.task_desc.lower() or
+            "differential equation" in self.task_desc.lower()
+        ):
+            # Create a temporary workspace for exploration
+            import tempfile
+            import os
+            temp_workspace = tempfile.mkdtemp(prefix="ai_scientist_exploration_")
+            try:
+                exploration_output = self._execute_data_exploration(temp_workspace)
+                print(f"[green]Data exploration output:[/green]\n{exploration_output[:1000]}...")  # Print first 1000 chars
+            except Exception as e:
+                print(f"[red]Data exploration failed: {str(e)}[/red]")
+                exploration_output = f"Data exploration failed: {str(e)}"
+            finally:
+                # Clean up temporary workspace
+                import shutil
+                try:
+                    shutil.rmtree(temp_workspace)
+                except:
+                    pass
+        
         prompt: Any = {
             "Introduction": (
                 "You are a scientist who is looking to publish a paper that will contribute significantly to the field."
@@ -483,6 +612,19 @@ class MinimalAgent:
             "Memory": self.memory_summary if self.memory_summary else "",
             "Instructions": {},
         }
+        
+        # Add data exploration insights if available
+        if exploration_output and exploration_output != "":
+            prompt["Data Exploration Results"] = {
+                "Preliminary data analysis output": exploration_output,
+                "Usage instructions": [
+                    "Use the above data exploration results to inform your experiment design",
+                    "The exploration shows you what the data looks like and its characteristics", 
+                    "Build upon the insights from the data exploration in your main experiment",
+                    "Reference specific findings from the exploration in your implementation",
+                ]
+            }
+        
         prompt["Instructions"] |= self._prompt_resp_fmt
         
         # Add physics-specific experiment design guidelines
@@ -507,6 +649,7 @@ class MinimalAgent:
                 "Your approach should include: 1) Data analysis to identify physical patterns, 2) Mathematical derivation of governing equations from first principles, 3) Numerical solution of derived equations, 4) Parameter estimation using physics constraints, 5) Model validation against data.",
                 "Consider what physical system could produce the observed data (oscillators, gravitational systems, etc.).",
                 "The solution sketch should be 6-10 sentences focusing on the physics theory and mathematical derivation approach.",
+                "USE THE INSIGHTS from the data exploration results to guide your physics hypothesis and mathematical modeling.",
                 "",
             ]
         
