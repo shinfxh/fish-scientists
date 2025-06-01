@@ -148,9 +148,9 @@ class AgentManager:
         }
         self.main_stage_goals: Dict[int, str] = {
             1: """
-                - Focus on understanding the physics of the system: what might this system be?
+                - Focus on understanding the physics of the system: what might this system be? Be creative and think outside the box.
                 - Focus on getting basic working implementation
-                - Aim for basic functional correctness
+                - Aim for basic functional correctness. The visualization that you generate should qualitatively match the data that you observe.
                 - If you are given \"Code To Use\", you can directly use it as a starting point.""",
             2: """
                 - Change hyperparameters such as learning rate, number of epochs, batch size, etc. to improve the performance
@@ -266,7 +266,7 @@ For hypothesis testing (Step 3):
 - Implement the derived mathematical models (not just curve fitting)
 - Solve differential equations numerically using appropriate methods (e.g., scipy.integrate.solve_ivp)
 - Compare theoretical predictions with observed data
-- Use physics-meaningful parameters (mass, length, damping, charge, electric permittivity, etc.) rather than arbitrary coefficients
+- Use physics-meaningful parameters (mass, length, charge, electric permittivity, etc.) rather than arbitrary coefficients
 - Validate models by checking conservation laws and physical constraints
 
 For iterative refinement (Step 4):

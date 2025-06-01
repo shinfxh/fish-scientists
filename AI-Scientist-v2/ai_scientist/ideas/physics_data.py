@@ -89,8 +89,8 @@ def simulate_double_pendulum(L1=1.0, L2=1.0, m1=1.0, m2=1.0, g=9.81,
     # Create DataFrame
     data = pd.DataFrame({
         'time': sol.t,
-        'a': theta1,
-        'b': theta2,
+        'theta1': theta1,
+        'theta2': theta2,
         'x1': x1,
         'y1': y1,
         'x2': x2,
@@ -145,15 +145,15 @@ def main():
     # Generate a single trajectory with detailed parameters
     print("Simulating single trajectory...")
     single_data = simulate_double_pendulum(
-        L1=1.0, L2=0.8,  # Slightly different lengths
-        m1=1.0, m2=1.2,  # Different masses
+        L1=1.0, L2=1.5,  # Slightly different lengths
+        m1=1.0, m2=2.0,  # Different masses
         theta1_0=np.pi/3, theta2_0=2*np.pi/3,  # Interesting initial angles
-        omega1_0=0.5, omega2_0=-0.3,  # Initial angular velocities
+        omega1_0=0., omega2_0=0.,  # Initial angular velocities
         t_span=(0, 15), dt=0.01
     )
     
     # Save single trajectory
-    single_data.to_csv('double_pendulum_single.csv', index=False)
+    single_data.to_csv('physics_data.csv', index=False)
     print(f"Single trajectory saved to 'double_pendulum_single.csv' ({len(single_data)} points)")
     
     # Generate multiple trajectories to show chaotic behavior

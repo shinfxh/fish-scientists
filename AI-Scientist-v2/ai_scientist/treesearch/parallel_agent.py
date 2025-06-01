@@ -326,7 +326,7 @@ class MinimalAgent:
                 "  - REQUIRED: Derive mathematical formulations from first principles (Newton's laws, conservation laws, Lagrangian mechanics, etc.)",
                 "  - REQUIRED: Use differential equations to model physical systems",
                 "  - REQUIRED: When implementing models, use scipy.integrate.solve_ivp or similar numerical solvers for differential equations",
-                "  - REQUIRED: Use physics-meaningful parameters (mass, length, electric permittivity, Young's modulus, damping coefficient, etc.)",
+                "  - REQUIRED: Use physics-meaningful parameters (mass, length, electric permittivity, Young's modulus, etc.)",
                 "  - REQUIRED: Validate your models by checking physical constraints and conservation laws",
                 "  - REQUIRED: Compare theoretical predictions (from derived equations) with experimental data",
                 "  - Always implement the full mathematical model before relying just approximations or fits",
@@ -759,7 +759,7 @@ class MinimalAgent:
         prompt: Any = {
             "Introduction": (
                 "You are an experienced scientist. You are provided with a previously developed "
-                "baseline implementation. Your task is to implement hyperparameter tuning for the following idea: "
+                "baseline implementation. Your task is to implement parameter tuning for the following idea: "
                 + hyperparam_idea.name
                 + ". "
                 + hyperparam_idea.description
@@ -772,7 +772,8 @@ class MinimalAgent:
                 "The code should be a single-file python program that is self-contained and can be executed as-is.",
                 "No parts of the code should be skipped, don't terminate the code execution before finishing the script.",
                 "Data saving requirements:",
-                "- Save all plottable data (metrics, losses, predictions, etc.) as numpy arrays using np.save()",
+                "- Save all plottable data (metrics, errors, losses, predictions, etc.) as numpy arrays using np.save()",
+                "- FOR PHYSICS EXPERIMENTS: parameters include things like mass, length, charge, etc. Start by considering physically meaningful parameters.",
                 "- Use the following naming convention for saved files:",
                 "  ```python",
                 "  # At the start of your code",

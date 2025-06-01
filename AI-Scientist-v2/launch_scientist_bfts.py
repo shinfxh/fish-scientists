@@ -276,7 +276,6 @@ if __name__ == "__main__":
                     base_folder=idea_dir,
                     big_model=args.model_writeup,
                     page_limit=4,
-                    citations_text=citations_text,
                 )
             else:
                 writeup_success = perform_icbinb_writeup(
