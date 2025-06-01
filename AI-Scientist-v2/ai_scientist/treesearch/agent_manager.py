@@ -148,8 +148,8 @@ class AgentManager:
         }
         self.main_stage_goals: Dict[int, str] = {
             1: """
+                - Focus on understanding the physics of the system: what might this system be?
                 - Focus on getting basic working implementation
-                - Use a simple dataset
                 - Aim for basic functional correctness
                 - If you are given \"Code To Use\", you can directly use it as a starting point.""",
             2: """
@@ -160,7 +160,7 @@ class AgentManager:
                 - Explore novel improvements
                 - Come up with experiments to reveal new insights
                 - Be creative and think outside the box
-                - MAKE SURE you use THREE HuggingFace dataset in total to test your models""",
+                - Reflect and think about the physics of the system""",
             4: """
                 - Conduct systematic component analysis that reveals the contribution of each part
                 - Use the same datasets you used from the previous stage""",

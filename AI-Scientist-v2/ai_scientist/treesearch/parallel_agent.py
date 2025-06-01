@@ -1183,6 +1183,8 @@ class MinimalAgent:
                 "text": (
                     "You are an experienced scientist analyzing experimental results. "
                     "You have been provided with plots from a scientific experiment. "
+                    "IMPORTANT: Think very carefully about the plots and the results they represent. You should be able to tell the underlying physical system from the plot alone."
+                    "IMPORTANT: Think along these lines: the data that I seem resembles this motion. The system is most likely going to be? OR: my theory is off by this observation, I should change my theory is this way."
                     f"This experiment is based on the following research idea: {self.task_desc}"
                     "Please analyze these plots and provide detailed insights about the results. "
                     "If you don't receive any plots, say 'No plots received'. "
