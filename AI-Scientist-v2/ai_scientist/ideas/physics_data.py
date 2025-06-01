@@ -191,9 +191,9 @@ def main():
     # Generate a single trajectory with detailed parameters
     print("Simulating single trajectory...")
     single_data = simulate_double_pendulum(
-        L1=1.0, L2=1.0,  # Slightly different lengths
+        L1=1.0, L2=1.5,  # Slightly different lengths
         m1=1.0, m2=1.0,  # Different masses
-        theta1_0=np.pi/4, theta2_0=np.pi/3,  # Interesting initial angles
+        theta1_0=np.pi/3, theta2_0=2*np.pi/3,  # Interesting initial angles
         omega1_0=0., omega2_0=0.,  # Initial angular velocities
         t_span=(0, 15), dt=0.01
     )
