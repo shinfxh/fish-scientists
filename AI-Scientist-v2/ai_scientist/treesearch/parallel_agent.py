@@ -2003,12 +2003,14 @@ class ParallelAgent:
 
         hyperparam_tuning_prompt = {
             "Introduction": (
-                "You are a scientist conducting hyperparameter tuning for baseline experiments. "
-                "Based on the current implementation and previous hyperparameter tuning attempts (if any), "
-                "propose ONE new hyperparameter tuning idea to see if it improves the performance."
-                "You should first check if simply running longer (more iterations) improves the performance."
-                "Then try tuning common hyperparameters such as learning rate, batch size, etc."
-                "Only propose algorithm-specific and/or model-specific hyperparameters after you have tried the above."
+                "You are a scientist conducting parameter tuning for baseline experiments. "
+                "Based on the current implementation and previous parameter tuning attempts (if any), "
+                "propose ONE new parameter tuning idea to see if it improves the performance."
+                "For machine learning experiments: You should first check if simply running longer (more iterations) improves the performance."
+                "For machine learning experiments: Then try tuning common parameters such as learning rate, batch size, etc."
+                "For machine learning experiments: Only propose algorithm-specific and/or model-specific parameters after you have tried the above."
+                "For physics experiments: you should avoid tuning parameters that are not relevant to the physics of the system, such as the learning rate or the solver type. Decide on a good solver and stick with it."
+                "Focus on tuning more physically meaningful parameters, such as mass or length."
             ),
             "Base code you are working on": wrap_code(self.best_stage1_node.code),
             "Previous Hyperparam Tuning Attempts": {
@@ -2016,8 +2018,8 @@ class ParallelAgent:
             },
             "Instructions": {
                 "Requirements": [
-                    "1. Identify ONE specific hyperparameter to tune",
-                    "2. Ensure the hyperparameter is different from previous attempts",
+                    "1. Identify ONE specific parameter to tune",
+                    "2. Ensure the parameter is different from previous attempts",
                 ]
             },
             "Response format": (

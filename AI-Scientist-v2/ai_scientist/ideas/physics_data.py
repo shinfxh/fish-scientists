@@ -27,15 +27,15 @@ def double_pendulum_equations(t, y, L1, L2, m1, m2, g):
     
     # First pendulum angular acceleration
     num1 = (-m2 * L1 * z1**2 * sin_diff * cos_diff +
-            m2 * g * np.sin(theta2) * cos_diff +
+            m2 * g * np.sin(theta2) * cos_diff -
             m2 * L2 * z2**2 * sin_diff -
             (m1 + m2) * g * np.sin(theta1))
     
     dz1_dt = num1 / den1
     
     # Second pendulum angular acceleration
-    num2 = (-m2 * L2 * z2**2 * sin_diff * cos_diff +
-            (m1 + m2) * (g * np.sin(theta1) * cos_diff - L1 * z1**2 * sin_diff) -
+    num2 = (m2 * L2 * z2**2 * sin_diff * cos_diff +
+            (m1 + m2) * (g * np.sin(theta1) * cos_diff + L1 * z1**2 * sin_diff) -
             (m1 + m2) * g * np.sin(theta2))
     
     dz2_dt = num2 / den2
@@ -136,6 +136,52 @@ def generate_multiple_trajectories(n_trajectories=5, noise_level=0.1):
     
     return pd.concat(all_data, ignore_index=True)
 
+def plot_pendulum_trajectory(data, save_path='double_pendulum_trajectory.png'):
+    """
+    Plot the trajectory of both pendulum bobs in the x-y plane.
+    
+    Parameters:
+    data: DataFrame with pendulum simulation data
+    save_path: path to save the plot
+    """
+    fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+    
+    # Create a colormap based on time for both trajectories
+    colors = plt.cm.viridis(data['time'] / data['time'].max())
+    
+    # Plot trajectory of first pendulum bob
+    scatter1 = ax.scatter(data['x1'], data['y1'], c=data['time'], 
+                         cmap='viridis', s=1, alpha=0.7, label='First bob')
+    
+    # Plot trajectory of second pendulum bob
+    scatter2 = ax.scatter(data['x2'], data['y2'], c=data['time'], 
+                         cmap='plasma', s=1, alpha=0.7, label='Second bob')
+    
+    # Add starting points
+    ax.plot(data['x1'].iloc[0], data['y1'].iloc[0], 'go', markersize=8, label='Start (bob 1)')
+    ax.plot(data['x2'].iloc[0], data['y2'].iloc[0], 'ro', markersize=8, label='Start (bob 2)')
+    
+    # Add ending points
+    ax.plot(data['x1'].iloc[-1], data['y1'].iloc[-1], 'g^', markersize=8, label='End (bob 1)')
+    ax.plot(data['x2'].iloc[-1], data['y2'].iloc[-1], 'r^', markersize=8, label='End (bob 2)')
+    
+    # Formatting
+    ax.set_xlabel('X Position (m)', fontsize=12)
+    ax.set_ylabel('Y Position (m)', fontsize=12)
+    ax.set_title('Double Pendulum Trajectory in X-Y Plane', fontsize=14, fontweight='bold')
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc='upper right')
+    ax.set_aspect('equal')
+    
+    # Add colorbar for time
+    cbar = plt.colorbar(scatter1, ax=ax, shrink=0.8)
+    cbar.set_label('Time (s)', fontsize=12)
+    
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    print(f"Trajectory plot saved to '{save_path}'")
+    plt.show()
+
 def main():
     """
     Main function to generate double pendulum data and save to CSV.
@@ -145,16 +191,20 @@ def main():
     # Generate a single trajectory with detailed parameters
     print("Simulating single trajectory...")
     single_data = simulate_double_pendulum(
-        L1=1.0, L2=1.5,  # Slightly different lengths
-        m1=1.0, m2=2.0,  # Different masses
-        theta1_0=np.pi/3, theta2_0=2*np.pi/3,  # Interesting initial angles
+        L1=1.0, L2=1.0,  # Slightly different lengths
+        m1=1.0, m2=1.0,  # Different masses
+        theta1_0=np.pi/4, theta2_0=np.pi/3,  # Interesting initial angles
         omega1_0=0., omega2_0=0.,  # Initial angular velocities
         t_span=(0, 15), dt=0.01
     )
     
     # Save single trajectory
     single_data.to_csv('physics_data.csv', index=False)
-    print(f"Single trajectory saved to 'double_pendulum_single.csv' ({len(single_data)} points)")
+    print(f"Single trajectory saved to 'physics_data.csv' ({len(single_data)} points)")
+    
+    # Plot the single trajectory
+    print("Creating trajectory plot...")
+    plot_pendulum_trajectory(single_data)
     
     # Generate multiple trajectories to show chaotic behavior
     print("Simulating multiple trajectories...")
